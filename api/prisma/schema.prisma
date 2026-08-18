@@ -59,7 +59,7 @@ model Collection {
   resources Resource[]
 
   @@index([userId])
-  @@index([userId, name])
+  @@unique([userId, name])
 }
 
 model Reaction {
