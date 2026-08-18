@@ -60,6 +60,7 @@ model Collection {
 
   @@index([userId])
   @@index([userId, name])
+  @@unique([userId, name])
 }
 
 model Reaction {
