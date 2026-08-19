@@ -1,4 +1,4 @@
-import { AuthState, Resource } from "./types";
+import { AuthState, Collection, Resource } from "./types";
 
 export const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:4100";
@@ -77,6 +77,74 @@ export function listResources(
   if (params.submittedBy) search.set("submittedBy", params.submittedBy);
   const query = search.toString() ? `?${search.toString()}` : "";
   return request<{ resources: Resource[] }>(`/api/resources${query}`);
+}
+
+export function listCollections(token: string) {
+  return request<{ collections: Collection[] }>("/api/collections", {
+    token,
+  });
+}
+
+export function getCollection(collectionId: string, token: string) {
+  return request<{ collection: Collection }>(
+    `/api/collections/${collectionId}`,
+    { token },
+  );
+}
+
+export function createCollection(
+  input: { name: string; description?: string },
+  token: string,
+) {
+  return request<{ collection: Collection }>("/api/collections", {
+    method: "POST",
+    body: input,
+    token,
+  });
+}
+
+export function updateCollection(
+  collectionId: string,
+  input: Partial<{ name: string; description: string }>,
+  token: string,
+) {
+  return request<{ collection: Collection }>(
+    `/api/collections/${collectionId}`,
+    {
+      method: "PATCH",
+      body: input,
+      token,
+    },
+  );
+}
+
+export function deleteCollection(collectionId: string, token: string) {
+  return request<{ message: string }>(`/api/collections/${collectionId}`, {
+    method: "DELETE",
+    token,
+  });
+}
+
+export function addResourcesToCollection(
+  collectionId: string,
+  resourceIds: string[],
+  token: string,
+) {
+  return request<{ collection: Collection }>(
+    `/api/collections/${collectionId}/resources`,
+    { method: "POST", body: { resourceIds }, token },
+  );
+}
+
+export function removeResourceFromCollection(
+  collectionId: string,
+  resourceId: string,
+  token: string,
+) {
+  return request<{ collection: Collection }>(
+    `/api/collections/${collectionId}/resources/${resourceId}`,
+    { method: "DELETE", token },
+  );
 }
 
 export function createResource(
@@ -167,7 +235,6 @@ export async function exportResources(
 
   return { blob, filename };
 }
-
 
 export function removeReaction(
   input: { resourceId: string; reactionId: string },
