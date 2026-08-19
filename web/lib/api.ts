@@ -166,6 +166,12 @@ export function createResource(
   }
 }
 
+export function getTagCounts() {
+  return request<{ tagCounts: Record<string, number> }>(
+    "/api/resources/tag-counts",
+  );
+}
+
 export function updateResource(
   resourceId: string,
   input: Partial<{
