@@ -192,10 +192,19 @@ router.patch("/:id", requireAuth, async (req: Request, res: Response) => {
           description: description?.trim() || null,
         }),
       },
-    });
+  });
 
     return res.json({ collection });
   } catch (err) {
+    if (
+      err instanceof Prisma.PrismaClientKnownRequestError &&
+      err.code === "P2002"
+    ) {
+      return res.status(409).json({
+        error: "A collection with this name already exists for this user",
+      });
+    }
+
     return res.status(500).json({ error: "Failed to update collection" });
   }
 });
