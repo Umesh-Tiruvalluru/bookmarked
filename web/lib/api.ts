@@ -70,13 +70,22 @@ export function getResource(id: string) {
 }
 
 export function listResources(
-  params: { tag?: string; submittedBy?: string } = {},
+  params: { tag?: string; submittedBy?: string; days?: number | null } = {},
 ) {
   const search = new URLSearchParams();
   if (params.tag) search.set("tag", params.tag);
   if (params.submittedBy) search.set("submittedBy", params.submittedBy);
+  if (params.days !== undefined && params.days !== null && params.days > 0) {
+    search.set("days", String(params.days));
+  }
   const query = search.toString() ? `?${search.toString()}` : "";
   return request<{ resources: Resource[] }>(`/api/resources${query}`);
+}
+
+export function getTagCounts() {
+  return request<{ tagCounts: Record<string, number> }>(
+    "/api/resources/tag-counts",
+  );
 }
 
 export function createResource(
@@ -167,7 +176,6 @@ export async function exportResources(
 
   return { blob, filename };
 }
-
 
 export function removeReaction(
   input: { resourceId: string; reactionId: string },
